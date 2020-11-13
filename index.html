@@ -226,6 +226,18 @@
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
   </nav>
 </div>
   <div class="cc-license site-overview-item animated" itemprop="license">
@@ -270,7 +282,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/11/02/test/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/11/13/%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0Sutton-Chapter3/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -284,7 +296,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2020/11/02/test/" class="post-title-link" itemprop="url">test</a>
+            <a href="/2020/11/13/%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0Sutton-Chapter3/" class="post-title-link" itemprop="url">强化学习Sutton-Chapter3</a>
         </h2>
 
         <div class="post-meta-container">
@@ -296,11 +308,20 @@
       <span class="post-meta-item-text">发表于</span>
       
 
-      <time title="创建时间：2020-11-02 20:06:20 / 修改时间：22:00:07" itemprop="dateCreated datePublished" datetime="2020-11-02T20:06:20+08:00">2020-11-02</time>
+      <time title="创建时间：2020-11-13 10:57:45 / 修改时间：11:06:59" itemprop="dateCreated datePublished" datetime="2020-11-13T10:57:45+08:00">2020-11-13</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Reinforcement-Learning/" itemprop="url" rel="index"><span itemprop="name">Reinforcement Learning</span></a>
+        </span>
     </span>
 
   
-    <span id="/2020/11/02/test/" class="post-meta-item leancloud_visitors" data-flag-title="test" title="阅读次数">
+    <span id="/2020/11/13/%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0Sutton-Chapter3/" class="post-meta-item leancloud_visitors" data-flag-title="强化学习Sutton-Chapter3" title="阅读次数">
       <span class="post-meta-item-icon">
         <i class="far fa-eye"></i>
       </span>
@@ -315,8 +336,8 @@
       </span>
       <span class="post-meta-item-text">Valine：</span>
     
-    <a title="valine" href="/2020/11/02/test/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2020/11/02/test/" itemprop="commentCount"></span>
+    <a title="valine" href="/2020/11/13/%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0Sutton-Chapter3/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/11/13/%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0Sutton-Chapter3/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -326,14 +347,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>8</span>
+      <span>3.2k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>1 分钟</span>
+      <span>3 分钟</span>
     </span>
 </div>
 
@@ -344,7 +365,15 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h2 id="这是一个测试文件"><a href="#这是一个测试文件" class="headerlink" title="这是一个测试文件"></a>这是一个测试文件</h2>
+          <h2 id="Chaper3-有限马尔可夫决策过程"><a href="#Chaper3-有限马尔可夫决策过程" class="headerlink" title="Chaper3 有限马尔可夫决策过程"></a>Chaper3 有限马尔可夫决策过程</h2><h3 id="智能体环境接口"><a href="#智能体环境接口" class="headerlink" title="智能体环境接口"></a>智能体环境接口</h3><p>在强化学习中进行学习和决策的机器被称为是<strong>智能体</strong>，在智能体之外与其产生相互作用的的事物被称为是<strong>环境</strong>。智能体通过选择动作对环境产生一定的影响，环境对这些动作做出相应的响应。<br><a target="_blank" rel="noopener" href="https://imgchr.com/i/B7CopF"><img data-src="https://s1.ax1x.com/2020/11/09/B7CopF.png" alt="B7CopF.png"></a><br>如上图所示：在每一个时间时刻智能体通过观察当前的环境$s_t\in  S$,选择对于当前环境来说最优的一个动作$a_t \in A$，在下一时刻，智能体从环境中收益$R_{t+1} \in R$,并且环境进入一个新的状态$s_{t+1} \in S$。</p>
+<h3 id="目标和收益"><a href="#目标和收益" class="headerlink" title="目标和收益"></a>目标和收益</h3><p>在强化学习中智能体的目标被表示成从从环境获取的收益。在每一个离散的时刻智能体都会从环境中获取一个标量的值表示收益，而智能体的目标是获取累计的最大收益。我们需要通过设定合适的奖励函数来促使智能体尽快的实现目标，实现我们设计强化学习的目的。<br>例如：<br>1 在迷宫游戏中，智能体在成功逃脱迷宫前每一步的收益都是-1，来促使智能体尽快的逃离迷宫。如果在智能体没有逃离迷宫之前每一步都基于正的收益，智能体将一直在迷宫中游荡。<br>2 在下棋游戏中，只有当赢得比赛时才给予智能体一个正值的=收益。如果吃掉对方棋子时也能活得收益，之恩那个提就会以输掉比赛为代价去吃掉对方的棋子。</p>
+<h3 id="回报和分幕"><a href="#回报和分幕" class="headerlink" title="回报和分幕"></a>回报和分幕</h3><p>智能体的目标是最大化累计收益，一般来说我们寻求的是最大化期望回报，记为$G_t$,在最简单的情况下回报是收益的总和即：$$G_t=R_{t+1}+R_{t+2}+R_{t+3}+……+R_T \tag1$$其中T为最终时刻。<br>在一些情况下智能体和环境之间的交互可一划分为一系列子序列，我们称每一个子序列为幕（episodes），比如一盘游戏的结束。这时我们的状态将会分为两种一种为非终结状态集$S$，令一种是包含终结与非终结状态的集合$S^+$。<br>在另外一些情况下智能体和环境之间的交互不能分成不同的幕而是持续不断的发生，比如一个连续过程的控制任务。为此我们引入一个<strong>折扣</strong>的概念，在公式中用$\gamma$ 来表示折扣率。<br>$$G_t=R_{t+1}+\gamma R_{t+2}+\gamma ^2 R_{t+3}+……=\sum_{k=0}^{\infin}\gamma ^kR_{t+k+1} \tag2$$<br>折扣率决定了未来收益的现值，当$\gamma=0$时表示该智能体是相当短视的只考虑眼前的利益而不考虑长远利益。当$\gamma=1$时表示该智能体是有远见的，但不符合常理。比如有一个选择：现在给你100美元和10年后给你100美元，如果$\gamma =1$之恩那个提会认为这两个选择所获得收益是相等的，这显然不符合常理，所以$\gamma$通常是一个大于零小于1的数。</p>
+<h4 id="Excise3-6"><a href="#Excise3-6" class="headerlink" title="Excise3.6"></a>Excise3.6</h4><p>$$\sum_{s’\in s^+} \sum_{r\in R}p(s’,r|s,a)=1 \tag3$$</p>
+<h3 id="分幕式和持续性任务的统一标识方法"><a href="#分幕式和持续性任务的统一标识方法" class="headerlink" title="分幕式和持续性任务的统一标识方法"></a>分幕式和持续性任务的统一标识方法</h3><p><a target="_blank" rel="noopener" href="https://imgchr.com/i/BHJVxg"><img data-src="https://s1.ax1x.com/2020/11/09/BHJVxg.png" alt="BHJVxg.png"></a><br>在上一节中提到了分幕式和持续性任务的两种不同的表示方法，为此我们加入 了一种特殊的吸收态，其特点是交互和转移过程均在自身进行并且奖励值为0，这样就不会对总体的$G_t$产生影响。使用这种方法，我么就可以把分幕式任务和持续型任务的回报函数采用一种统一的表示方法。$$G_t = \sum_{k=t+1}^T \gamma^{k-t-1}R_k \tag4$$</p>
+<h3 id="策略和价值函数"><a href="#策略和价值函数" class="headerlink" title="策略和价值函数"></a>策略和价值函数</h3><p><em>价值函数</em>： 价值函数是状态（状态和动作的二元）有关的函数，用来评估当前智能体在给定状态（状态和动作）下有多好。<br><em>策略</em>：策略是从状态到每个动作的选择概率之间的映射。$\pi(a|s)$就是当$S_t=s$时$A_t=a$的概率。<br>我们把策略$\pi$下状态$s$的价值函数记为$v_{\pi}(s)$，即从状态$s$开始，智能体按照策略$\pi$进行决策所获得的回报的概率期望值。计算公式为：<br>$$v_{\pi}(s)=\mathbb{E}<em>{\pi}[G_t|S_t=s]=\mathbb{E}</em>{\pi}[\sum_{k=0}^\infin\gamma R_{t+k+1}|S_t=s]\tag5$$<br>在强化学习中价值函数与后继状态价值之间还有一个递推特性：<br>$$<br>\begin{aligned}<br>v_{\pi}(s) &amp;= \mathbb{E}<em>{\pi}[G_t|S_t=s]\&amp;=\mathbb{E}</em>{\pi}[R_{t+1}+\gamma G_{t+1}|S_t=s]\&amp;=\sum_a\pi(a|s)\sum_{s’}\sum_rp(s’,r|s,a)[r+\gamma\mathbb{<br>E}<em>{\pi}[G</em>{t+1}|s_{t+1}=s’]]\&amp;=\sum_a\pi(a|s)\sum_{s’,r}p(s’,r|s,a)[r+\gamma v_{\pi}(s’)]\tag6<br>\end{aligned}<br>$$<br>类似的，把在策略$\pi$下在状态$s$时采取动作$a$的价值记为$q_{pi}(s|a)$，这是根据策略$\pi$在状态$s$开始执行动作$a$之后，所有可能的决策序列的期望回报：<br>$$q_{\pi}(s|a) = \mathbb{E}<em>{\pi}[G_t|S_t=s,A_t=a]=\mathbb{E}_{\pi}[\sum</em>{k=0}^{\infin}\gamma^kR_{t+k+1}|S_t=s,A_t=a]\tag7$$<br>下面的图片可以帮助整个过程。<br><a target="_blank" rel="noopener" href="https://imgchr.com/i/DSSkaF"><div align=center><img data-src="https://s3.ax1x.com/2020/11/12/DSSkaF.png" alt="DSSkaF.png"></a></p>
+<h3 id="最优策略和最优价值函数"><a href="#最优策略和最优价值函数" class="headerlink" title="最优策略和最优价值函数"></a>最优策略和最优价值函数</h3><p>解决一个强化学习问题就意味着要找出一个策略$\pi’$使其期望的回报$v_{\pi’}(s)$大于其它任何策略的期望回报，我们称其为最优策略。其状态价值函数称为最优状态价值函数<br>$$ v_*(s)={\underset {\pi}{\operatorname {max} }}v_{\pi}(s)\tag8 $$<br>最优策略共享最优动作价值函数<br>$$ q_*(s,q)={\underset {\pi}{\operatorname {max} }}q_{\pi}(s,a)\tag9 $$<br>因为$v_*$是策略的价值函数，因此必须满足贝尔曼方程，称为贝尔曼最优方程，这个方程说明了在最优策略下各个状态的 价值一定等于这个状态下最优动作的期望回报。<br>$$<br>\begin{aligned}<br>v_{<em>}(s) &amp;=\max <em>{a \in \mathcal{A}(s)} q</em>{\pi_{</em>}}(s, a) \<br>&amp;=\max <em>{a} \mathbb{E}</em>{\pi_{<em>}}\left[G_{t} \mid S_{t}=s, A_{t}=a\right] \<br>&amp;=\max <em>{a} \mathbb{E}</em>{\pi_{</em>}}\left[R_{t+1}+\gamma G_{t+1} \mid S_{t}=s, A_{t}=a\right] \<br>&amp;=\max <em>{a} \mathbb{E}\left[R</em>{t+1}+\gamma v_{<em>}\left(S_{t+1}\right) \mid S_{t}=s, A_{t}=a\right] \<br>&amp;=\max <em>{a} \sum</em>{s^{\prime}, r} p\left(s^{\prime}, r \mid s, a\right)\left[r+\gamma v_{</em>}\left(s^{\prime}\right)\right]<br>\end{aligned}<br>$$</p>
+<h3 id="最优性和近似算法"><a href="#最优性和近似算法" class="headerlink" title="最优性和近似算法"></a>最优性和近似算法</h3><p>虽然我们已经定义出了最优值函数和最优策略，而且理论上也可以直接计算出来。但是通常情况下我们没法得到这么多的计算资源。与此同时内存溢出也是一个很大的问题，因为很多问题的状态数量太多超过存储范围。对于这些情况我们就不能够使用直接存储每个状态的值函数而是必须使用一种更精简的参数型函数表示的方法。<br>强化学习的框架迫使我们进行近似求解。而且这个框架同时也很容易进行近似，比如对于很多小概率出现的状态，选择最优解和次优解区别不大。而且强化学习的在线学习的特性让其能够方便地对出现比较多的状态进行更多关注。这是一个强化学习区分其它近似求解MDP的关键特点。</p>
+
       
     </div>
 
@@ -529,14 +558,14 @@
       <i class="fa fa-chart-line"></i>
     </span>
       <span>站点总字数：</span>
-    <span title="站点总字数">0k</span>
+    <span title="站点总字数">4k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span>站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">1 分钟</span>
+    <span title="站点阅读时长">3 分钟</span>
   </span>
 </div>
 <div class="busuanzi-count">
