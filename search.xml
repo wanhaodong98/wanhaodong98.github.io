@@ -50,4 +50,43 @@ v_{*}(s) &=\max _{a \in \mathcal{A}(s)} q_{\pi_{*}}(s, a) \\
         <tag>Machine Learning</tag>
       </tags>
   </entry>
+  <entry>
+    <title>强化学习Sutton-Chapter4-动态规划</title>
+    <url>/2020/11/20/%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0Sutton-Chapter4-%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/</url>
+    <content><![CDATA[<p><strong>动态规划</strong>是在给定一个用马尔可夫决策过程（MDP）描述的完备环境模型的情况下，其可以计算最优的策略。<br><a id="more"></a></p>
+<h3 id="策略评估"><a href="#策略评估" class="headerlink" title="策略评估"></a>策略评估</h3><p>回顾上一章的内容，可知状态价值函数的计算方法如下，求解价值函数我们称之为<strong>策略评估</strong>。</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+v_{\pi}(s) & \doteq \mathbb{E}_{\pi}\left[G_{t} \mid S_{t}=s\right] \\
+&=\mathbb{E}_{\pi}\left[R_{t+1}+\gamma G_{t+1} \mid S_{t}=s\right] \\
+&=\mathbb{E}_{\pi}\left[R_{t+1}+\gamma v_{\pi}\left(S_{t+1}\right) \mid S_{t}=s\right] \\
+&=\sum_{a} \pi(a \mid s) \sum_{s^{\prime}, r} p\left(s^{\prime}, r \mid s, a\right)\left[r+\gamma v_{z}\left(s^{\prime}\right)\right],
+\end{aligned} \tag1</script><p>通过将上式看作是一个具有$|S|$个未知数和$|S|$个方程的线性方程组，可以直接将$v_{\pi}(s)$解出，这种方法称之为<strong>解析法</strong>，通常该方法的计算过程较为繁琐。<br>我们通常使用<strong>迭代法</strong>，迭代的初始值$v_0$可以任意选取，然后下一步的取值近似的使用$v_{\pi}$的贝尔曼方程进行更新，当$k\rightarrow  \infty$时$\{v_k\}$将会收敛到$v_{\pi}$。</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+v_{k+1}(s) & \doteq \mathbb{E}_{\pi}\left[R_{t+1}+\gamma v_{k}\left(S_{t+1}\right) \mid S_{t}=s\right] \\
+&=\sum_{a} \pi(a \mid s) \sum_{s^{\prime}, r} p\left(s^{\prime}, r \mid s, a\right)\left[r+\gamma v_{k}\left(s^{\prime}\right)\right]
+\end{aligned} \tag2</script><h4 id="Example-网格游戏"><a href="#Example-网格游戏" class="headerlink" title="Example 网格游戏"></a>Example 网格游戏</h4><h3 id="策略改进"><a href="#策略改进" class="headerlink" title="策略改进"></a>策略改进</h3><p>策略评估的作用就是为了寻找更好的策略，在$s$状态时如果继续遵守当前策略$\pi (s)$此时的状态价值为$v_{\pi}(s)$，选择动作$a$后，继续执行原策略$\pi$,这时根据策略改进定理，我们通过比较$q_{\pi}(s,a)$和$v_{\pi}$的值就可以知道当前动作更优还是原策略更优。</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+q_{\pi}(s, a) & \doteq \mathbb{E}\left[R_{t+1}+\gamma v_{x}\left(S_{t+1}\right) \mid S_{t}=s, A_{t}=a\right] \\
+&=\sum_{x^{\prime}, r} p\left(s^{\prime}, r \mid s, a\right)\left[r+\gamma v_{\pi}\left(s^{\prime}\right)\right]
+\end{aligned} \tag3</script><p><strong>策略改进定理(policy improvement theorem)</strong>：$π$和$π’$是两个确定的策略，如果对所有状态$s∈S$有$Qπ(s,π’(s))≥Vπ(s)$，那么策略$π’$必然比策略$π$更好，或者至少一样好。其中的不等式等价于$Vπ’(s)≥Vπ(s)$。<br>我们将上述选择最优策略的方法 推广到所有的状态和动作中得到：</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+\pi^{\prime}(s) & \doteq \arg \max q_{\pi}(s, a) \\
+&=\arg \max \mathbb{E}\left[R_{t+1}+\gamma v_{\pi}\left(S_{t+1}\right) \mid S_{t}=s, A_{t}=a\right] \\
+&=\arg \max _{a} \sum_{x^{\prime}, r} p\left(s^{\prime}, r \mid s, a\right)\left[r+\gamma v_{\pi}\left(s^{\prime}\right)\right]
+\end{aligned} \tag4</script><h3 id="策略迭代"><a href="#策略迭代" class="headerlink" title="策略迭代"></a>策略迭代</h3><p>假设我们有一个策略$\pi$, 我们可以通过策略评估获取策略的$v_{\pi}(s)$然后根据策略改进定理获取更好的策略$\pi’$,之后再次使用策略评估计算$v_{\pi’}(s)$,再次根据策略改进定理求出下一个策略一直循环直到收敛。如下图所示：<br><a href="https://imgchr.com/i/DlirDg"><img data-src="https://s3.ax1x.com/2020/11/20/DlirDg.png" alt="DlirDg.png"></a><br>具体算法实现过程如下图所示：<br><a href="https://imgchr.com/i/DliO8x"><img data-src="https://s3.ax1x.com/2020/11/20/DliO8x.png" alt="DliO8x.png"></a></p>
+<h3 id="价值迭代"><a href="#价值迭代" class="headerlink" title="价值迭代"></a>价值迭代</h3><p>策略迭代的方法有一个显著的缺点就是需要巨大的计算量，使用我的计算机在杰克租车问题中设置收敛阈值为0.0001，仅策略评估收敛计算的时间大约需要50mins。实际上我们可以通过截断策略评估的进程来减少计算量而对贪心策略没有任何影响（比如在方格游戏中前三轮评估之后的迭代对贪心策略没有任何影响）。提前截断的极端情况就是遍历一遍策略评估就立刻停止策略评估的进程进入策略改进，我们称中方法为<strong>值迭代</strong>。具体的实现算法如下图所示：<br> <a href="https://imgchr.com/i/DlAtUJ"><img data-src="https://s3.ax1x.com/2020/11/20/DlAtUJ.png" alt="DlAtUJ.png"></a></p>
+<h3 id="异步动态规划"><a href="#异步动态规划" class="headerlink" title="异步动态规划"></a>异步动态规划</h3><p> 动态规划的一个主要缺点就是需要对MDP整个状态集进行遍历，如果状态集过大，仅一次遍历就需要十分浪费计算资源。<strong>异步动态规划</strong>是一种就地迭代的算法，这个算法使用任意可用的状态值，以任意顺序来更新状态值。我们也可以选择特定的需要更新的状态值进行多次更新和跳过一些特定装状态值的更新来节省资源提高系统的的灵活性。</p>
+]]></content>
+      <categories>
+        <category>Reinforcement Learning</category>
+      </categories>
+      <tags>
+        <tag>Reinforcement Learning</tag>
+        <tag>Machine Learning</tag>
+      </tags>
+  </entry>
 </search>
