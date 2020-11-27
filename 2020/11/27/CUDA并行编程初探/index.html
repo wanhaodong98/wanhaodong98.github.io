@@ -25,26 +25,29 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"8.0.2","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":"valine","storage":true,"lazyload":false,"nav":null,"activeClass":"valine"},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
   </script>
 
-  <meta name="description" content="智能体环境接口在强化学习中进行学习和决策的机器被称为是智能体，在智能体之外与其产生相互作用的的事物被称为是环境。智能体通过选择动作对环境产生一定的影响，环境对这些动作做出相应的响应。">
+  <meta name="description" content="前言在配置Tensorflow环境时，通常会需要安装CUDA驱动和cuDNN，当时对这个两个工具的用处并不是很了解，只是知道使用这个工具可以将程序并行执行来加速机器学习。正巧，本学期选了高性能计算实验这门课程，想借着这次机会来学习下CUDA的编程顺便完成本课程的大作业，于是有了今天的这篇文章。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="强化学习Sutton-Chapter3-有限马尔可夫决策过程">
-<meta property="og:url" content="http://example.com/2020/11/13/%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0Sutton-Chapter3-%E6%9C%89%E9%99%90%E9%A9%AC%E5%B0%94%E5%8F%AF%E5%A4%AB%E5%86%B3%E7%AD%96%E8%BF%87%E7%A8%8B/index.html">
+<meta property="og:title" content="CUDA并行编程初探">
+<meta property="og:url" content="http://example.com/2020/11/27/CUDA%E5%B9%B6%E8%A1%8C%E7%BC%96%E7%A8%8B%E5%88%9D%E6%8E%A2/index.html">
 <meta property="og:site_name" content="Hooden&#39;s Blog">
-<meta property="og:description" content="智能体环境接口在强化学习中进行学习和决策的机器被称为是智能体，在智能体之外与其产生相互作用的的事物被称为是环境。智能体通过选择动作对环境产生一定的影响，环境对这些动作做出相应的响应。">
+<meta property="og:description" content="前言在配置Tensorflow环境时，通常会需要安装CUDA驱动和cuDNN，当时对这个两个工具的用处并不是很了解，只是知道使用这个工具可以将程序并行执行来加速机器学习。正巧，本学期选了高性能计算实验这门课程，想借着这次机会来学习下CUDA的编程顺便完成本课程的大作业，于是有了今天的这篇文章。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://s1.ax1x.com/2020/11/09/B7CopF.png">
-<meta property="og:image" content="https://s1.ax1x.com/2020/11/09/BHJVxg.png">
-<meta property="og:image" content="https://s3.ax1x.com/2020/11/12/DSSkaF.png">
-<meta property="article:published_time" content="2020-11-13T02:57:45.000Z">
-<meta property="article:modified_time" content="2020-11-13T03:42:15.298Z">
+<meta property="og:image" content="https://s3.ax1x.com/2020/11/26/D0TlJs.jpg">
+<meta property="og:image" content="https://s3.ax1x.com/2020/11/26/DBA2FJ.png">
+<meta property="og:image" content="https://s3.ax1x.com/2020/11/26/DB0j9H.png">
+<meta property="og:image" content="https://s3.ax1x.com/2020/11/26/DBBV3j.png">
+<meta property="og:image" content="https://s3.ax1x.com/2020/11/27/DDJdoj.png">
+<meta property="og:image" content="https://s3.ax1x.com/2020/11/27/DDtVbD.png">
+<meta property="article:published_time" content="2020-11-27T03:58:40.000Z">
+<meta property="article:modified_time" content="2020-11-27T04:01:11.605Z">
 <meta property="article:author" content="H.Wan">
-<meta property="article:tag" content="Reinforcement Learning">
 <meta property="article:tag" content="Machine Learning">
+<meta property="article:tag" content="CUDA">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://s1.ax1x.com/2020/11/09/B7CopF.png">
+<meta name="twitter:image" content="https://s3.ax1x.com/2020/11/26/D0TlJs.jpg">
 
 
-<link rel="canonical" href="http://example.com/2020/11/13/%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0Sutton-Chapter3-%E6%9C%89%E9%99%90%E9%A9%AC%E5%B0%94%E5%8F%AF%E5%A4%AB%E5%86%B3%E7%AD%96%E8%BF%87%E7%A8%8B/">
+<link rel="canonical" href="http://example.com/2020/11/27/CUDA%E5%B9%B6%E8%A1%8C%E7%BC%96%E7%A8%8B%E5%88%9D%E6%8E%A2/">
 
 
 <script class="page-configurations">
@@ -57,7 +60,7 @@
   };
 </script>
 
-  <title>强化学习Sutton-Chapter3-有限马尔可夫决策过程 | Hooden's Blog</title>
+  <title>CUDA并行编程初探 | Hooden's Blog</title>
   
 
 
@@ -218,7 +221,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <section class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%99%BA%E8%83%BD%E4%BD%93%E7%8E%AF%E5%A2%83%E6%8E%A5%E5%8F%A3"><span class="nav-number">1.</span> <span class="nav-text">智能体环境接口</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9B%AE%E6%A0%87%E5%92%8C%E6%94%B6%E7%9B%8A"><span class="nav-number">2.</span> <span class="nav-text">目标和收益</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9B%9E%E6%8A%A5%E5%92%8C%E5%88%86%E5%B9%95"><span class="nav-number">3.</span> <span class="nav-text">回报和分幕</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Excise3-6"><span class="nav-number">3.1.</span> <span class="nav-text">Excise3.6</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E5%B9%95%E5%BC%8F%E5%92%8C%E6%8C%81%E7%BB%AD%E6%80%A7%E4%BB%BB%E5%8A%A1%E7%9A%84%E7%BB%9F%E4%B8%80%E6%A0%87%E8%AF%86%E6%96%B9%E6%B3%95"><span class="nav-number">4.</span> <span class="nav-text">分幕式和持续性任务的统一标识方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AD%96%E7%95%A5%E5%92%8C%E4%BB%B7%E5%80%BC%E5%87%BD%E6%95%B0"><span class="nav-number">5.</span> <span class="nav-text">策略和价值函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%80%E4%BC%98%E7%AD%96%E7%95%A5%E5%92%8C%E6%9C%80%E4%BC%98%E4%BB%B7%E5%80%BC%E5%87%BD%E6%95%B0"><span class="nav-number">6.</span> <span class="nav-text">最优策略和最优价值函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%80%E4%BC%98%E6%80%A7%E5%92%8C%E8%BF%91%E4%BC%BC%E7%AE%97%E6%B3%95"><span class="nav-number">7.</span> <span class="nav-text">最优性和近似算法</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CUDA%E7%AE%80%E4%BB%8B"><span class="nav-number">2.</span> <span class="nav-text">CUDA简介</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CUDA%E7%BC%96%E7%A8%8B%E5%9F%BA%E7%A1%80"><span class="nav-number">3.</span> <span class="nav-text">CUDA编程基础</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#GPU%E7%9A%84%E7%A1%AC%E4%BB%B6%E5%B1%82%E6%AC%A1"><span class="nav-number">4.</span> <span class="nav-text">GPU的硬件层次</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#GPU%E7%9A%84%E8%BD%AF%E4%BB%B6%E5%B1%82%E6%AC%A1"><span class="nav-number">5.</span> <span class="nav-text">GPU的软件层次</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#GPU%E5%B9%B6%E8%A1%8C%E7%A8%8B%E5%BA%8F%E7%A4%BA%E4%BE%8B"><span class="nav-number">6.</span> <span class="nav-text">GPU并行程序示例</span></a></li></ol></div>
         </section>
         <!--/noindex-->
 
@@ -292,7 +295,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/11/13/%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0Sutton-Chapter3-%E6%9C%89%E9%99%90%E9%A9%AC%E5%B0%94%E5%8F%AF%E5%A4%AB%E5%86%B3%E7%AD%96%E8%BF%87%E7%A8%8B/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/11/27/CUDA%E5%B9%B6%E8%A1%8C%E7%BC%96%E7%A8%8B%E5%88%9D%E6%8E%A2/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -305,7 +308,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          强化学习Sutton-Chapter3-有限马尔可夫决策过程
+          CUDA并行编程初探
         </h1>
 
         <div class="post-meta-container">
@@ -317,7 +320,7 @@
       <span class="post-meta-item-text">发表于</span>
       
 
-      <time title="创建时间：2020-11-13 10:57:45 / 修改时间：11:42:15" itemprop="dateCreated datePublished" datetime="2020-11-13T10:57:45+08:00">2020-11-13</time>
+      <time title="创建时间：2020-11-27 11:58:40 / 修改时间：12:01:11" itemprop="dateCreated datePublished" datetime="2020-11-27T11:58:40+08:00">2020-11-27</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -325,12 +328,12 @@
       </span>
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Reinforcement-Learning/" itemprop="url" rel="index"><span itemprop="name">Reinforcement Learning</span></a>
+          <a href="/categories/%E7%BC%96%E7%A8%8B/" itemprop="url" rel="index"><span itemprop="name">编程</span></a>
         </span>
     </span>
 
   
-    <span id="/2020/11/13/%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0Sutton-Chapter3-%E6%9C%89%E9%99%90%E9%A9%AC%E5%B0%94%E5%8F%AF%E5%A4%AB%E5%86%B3%E7%AD%96%E8%BF%87%E7%A8%8B/" class="post-meta-item leancloud_visitors" data-flag-title="强化学习Sutton-Chapter3-有限马尔可夫决策过程" title="阅读次数">
+    <span id="/2020/11/27/CUDA%E5%B9%B6%E8%A1%8C%E7%BC%96%E7%A8%8B%E5%88%9D%E6%8E%A2/" class="post-meta-item leancloud_visitors" data-flag-title="CUDA并行编程初探" title="阅读次数">
       <span class="post-meta-item-icon">
         <i class="far fa-eye"></i>
       </span>
@@ -352,8 +355,8 @@
       </span>
       <span class="post-meta-item-text">Valine：</span>
     
-    <a title="valine" href="/2020/11/13/%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0Sutton-Chapter3-%E6%9C%89%E9%99%90%E9%A9%AC%E5%B0%94%E5%8F%AF%E5%A4%AB%E5%86%B3%E7%AD%96%E8%BF%87%E7%A8%8B/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2020/11/13/%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0Sutton-Chapter3-%E6%9C%89%E9%99%90%E9%A9%AC%E5%B0%94%E5%8F%AF%E5%A4%AB%E5%86%B3%E7%AD%96%E8%BF%87%E7%A8%8B/" itemprop="commentCount"></span>
+    <a title="valine" href="/2020/11/27/CUDA%E5%B9%B6%E8%A1%8C%E7%BC%96%E7%A8%8B%E5%88%9D%E6%8E%A2/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/11/27/CUDA%E5%B9%B6%E8%A1%8C%E7%BC%96%E7%A8%8B%E5%88%9D%E6%8E%A2/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -381,30 +384,12 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <h3 id="智能体环境接口"><a href="#智能体环境接口" class="headerlink" title="智能体环境接口"></a>智能体环境接口</h3><p>在强化学习中进行学习和决策的机器被称为是<strong>智能体</strong>，在智能体之外与其产生相互作用的的事物被称为是<strong>环境</strong>。智能体通过选择动作对环境产生一定的影响，环境对这些动作做出相应的响应。<br><a id="more"></a><br><a target="_blank" rel="noopener" href="https://imgchr.com/i/B7CopF"><img data-src="https://s1.ax1x.com/2020/11/09/B7CopF.png" alt="B7CopF.png"></a><br>如上图所示：在每一个时间时刻智能体通过观察当前的环境$s_t\in  S$,选择对于当前环境来说最优的一个动作$a_t \in A$，在下一时刻，智能体从环境中收益$R_{t+1} \in R$,并且环境进入一个新的状态$s_{t+1} \in S$。</p>
-<h3 id="目标和收益"><a href="#目标和收益" class="headerlink" title="目标和收益"></a>目标和收益</h3><p>在强化学习中智能体的目标被表示成从从环境获取的收益。在每一个离散的时刻智能体都会从环境中获取一个标量的值表示收益，而智能体的目标是获取累计的最大收益。我们需要通过设定合适的奖励函数来促使智能体尽快的实现目标，实现我们设计强化学习的目的。<br>例如：<br>1 在迷宫游戏中，智能体在成功逃脱迷宫前每一步的收益都是-1，来促使智能体尽快的逃离迷宫。如果在智能体没有逃离迷宫之前每一步都基于正的收益，智能体将一直在迷宫中游荡。<br>2 在下棋游戏中，只有当赢得比赛时才给予智能体一个正值的=收益。如果吃掉对方棋子时也能活得收益，之恩那个提就会以输掉比赛为代价去吃掉对方的棋子。</p>
-<h3 id="回报和分幕"><a href="#回报和分幕" class="headerlink" title="回报和分幕"></a>回报和分幕</h3><p>智能体的目标是最大化累计收益，一般来说我们寻求的是最大化期望回报，记为$G_t$,在最简单的情况下回报是收益的总和即：<script type="math/tex">G_t=R_{t+1}+R_{t+2}+R_{t+3}+……+R_T</script>其中T为最终时刻。<br>在一些情况下智能体和环境之间的交互可一划分为一系列子序列，我们称每一个子序列为幕（episodes），比如一盘游戏的结束。这时我们的状态将会分为两种一种为非终结状态集$S$，令一种是包含终结与非终结状态的集合$S^+$。<br>在另外一些情况下智能体和环境之间的交互不能分成不同的幕而是持续不断的发生，比如一个连续过程的控制任务。为此我们引入一个<strong>折扣</strong>的概念，在公式中用$\gamma$ 来表示折扣率。</p>
-<script type="math/tex; mode=display">G_t=R_{t+1}+\gamma R_{t+2}+\gamma ^2 R_{t+3}+……=\sum_{k=0}^{\infty}\gamma ^kR_{t+k+1}</script><p>折扣率决定了未来收益的现值，当$\gamma=0$时表示该智能体是相当短视的只考虑眼前的利益而不考虑长远利益。当$\gamma=1$时表示该智能体是有远见的，但不符合常理。比如有一个选择：现在给你100美元和10年后给你100美元，如果$\gamma =1$之恩那个提会认为这两个选择所获得收益是相等的，这显然不符合常理，所以$\gamma$通常是一个大于零小于1的数。</p>
-<h4 id="Excise3-6"><a href="#Excise3-6" class="headerlink" title="Excise3.6"></a>Excise3.6</h4><script type="math/tex; mode=display">\sum_{s'\in s^+} \sum_{r\in R}p(s',r|s,a)=1</script><h3 id="分幕式和持续性任务的统一标识方法"><a href="#分幕式和持续性任务的统一标识方法" class="headerlink" title="分幕式和持续性任务的统一标识方法"></a>分幕式和持续性任务的统一标识方法</h3><p><a target="_blank" rel="noopener" href="https://imgchr.com/i/BHJVxg"><img data-src="https://s1.ax1x.com/2020/11/09/BHJVxg.png" alt="BHJVxg.png"></a><br>在上一节中提到了分幕式和持续性任务的两种不同的表示方法，为此我们加入 了一种特殊的吸收态，其特点是交互和转移过程均在自身进行并且奖励值为0，这样就不会对总体的$G_t$产生影响。使用这种方法，我么就可以把分幕式任务和持续型任务的回报函数采用一种统一的表示方法。<script type="math/tex">G_t = \sum_{k=t+1}^T \gamma^{k-t-1}R_k</script></p>
-<h3 id="策略和价值函数"><a href="#策略和价值函数" class="headerlink" title="策略和价值函数"></a>策略和价值函数</h3><p><em>价值函数</em>： 价值函数是状态（状态和动作的二元）有关的函数，用来评估当前智能体在给定状态（状态和动作）下有多好。<br><em>策略</em>：策略是从状态到每个动作的选择概率之间的映射。$\pi(a|s)$就是当$S_t=s$时$A_t=a$的概率。<br>我们把策略$\pi$下状态$s$的价值函数记为$v_{\pi}(s)$，即从状态$s$开始，智能体按照策略$\pi$进行决策所获得的回报的概率期望值。计算公式为：</p>
-<script type="math/tex; mode=display">v_{\pi}(s)=\mathbb{E}_{\pi}[G_t|S_t=s]=\mathbb{E}_{\pi}[\sum_{k=0}^\infty\gamma R_{t+k+1}|S_t=s]</script><p>在强化学习中价值函数与后继状态价值之间还有一个递推特性：</p>
-<script type="math/tex; mode=display">
-\begin{aligned}
-v_{\pi}(s) &= \mathbb{E}_{\pi}[G_t|S_t=s]\\&=\mathbb{E}_{\pi}[R_{t+1}+\gamma G_{t+1}|S_t=s]\\&=\sum_a\pi(a|s)\sum_{s'}\sum_rp(s',r|s,a)[r+\gamma\mathbb{
-E}_{\pi}[G_{t+1}|s_{t+1}=s']]\\&=\sum_a\pi(a|s)\sum_{s',r}p(s',r|s,a)[r+\gamma v_{\pi}(s')]
-\end{aligned}</script><p>类似的，把在策略$\pi$下在状态$s$时采取动作$a$的价值记为$q_{pi}(s|a)$，这是根据策略$\pi$在状态$s$开始执行动作$a$之后，所有可能的决策序列的期望回报：</p>
-<script type="math/tex; mode=display">q_{\pi}(s|a) = \mathbb{E}_{\pi}[G_t|S_t=s,A_t=a]=\mathbb{E}_{\pi}[\sum_{k=0}^{\infty}\gamma^kR_{t+k+1}|S_t=s,A_t=a]</script><p>下面的图片可以帮助整个过程。<br><a target="_blank" rel="noopener" href="https://imgchr.com/i/DSSkaF"><img data-src="https://s3.ax1x.com/2020/11/12/DSSkaF.png" alt="DSSkaF.png"></a></p>
-<h3 id="最优策略和最优价值函数"><a href="#最优策略和最优价值函数" class="headerlink" title="最优策略和最优价值函数"></a>最优策略和最优价值函数</h3><p>解决一个强化学习问题就意味着要找出一个策略$\pi’$使其期望的回报$v_{\pi’}(s)$大于其它任何策略的期望回报，我们称其为最优策略。其状态价值函数称为最优状态价值函数</p>
-<script type="math/tex; mode=display">v_*(s)={\underset {\pi}{\operatorname {max} }}v_{\pi}(s)</script><p>最优策略共享最优动作价值函数</p>
-<script type="math/tex; mode=display">q_*(s,q)={\underset {\pi}{\operatorname {max} }}q_{\pi}(s,a)</script><p>因为$v_*$是策略的价值函数，因此必须满足贝尔曼方程，称为贝尔曼最优方程，这个方程说明了在最优策略下各个状态的 价值一定等于这个状态下最优动作的期望回报。</p>
-<script type="math/tex; mode=display">
-\begin{aligned}
-v_{*}(s) &=\max _{a \in \mathcal{A}(s)} q_{\pi_{*}}(s, a) \\
-&=\max _{a} \mathbb{E}_{\pi_{*}}\left[G_{t} \mid S_{t}=s, A_{t}=a\right] \\
-&=\max _{a} \mathbb{E}_{\pi_{*}}\left[R_{t+1}+\gamma G_{t+1} \mid S_{t}=s, A_{t}=a\right] \\
-&=\max _{a} \mathbb{E}\left[R_{t+1}+\gamma v_{*}\left(S_{t+1}\right) \mid S_{t}=s, A_{t}=a\right] \\
-&=\max _{a} \sum_{s^{\prime}, r} p\left(s^{\prime}, r \mid s, a\right)\left[r+\gamma v_{*}\left(s^{\prime}\right)\right]
-\end{aligned}</script><h3 id="最优性和近似算法"><a href="#最优性和近似算法" class="headerlink" title="最优性和近似算法"></a>最优性和近似算法</h3><p>虽然我们已经定义出了最优值函数和最优策略，而且理论上也可以直接计算出来。但是通常情况下我们没法得到这么多的计算资源。与此同时内存溢出也是一个很大的问题，因为很多问题的状态数量太多超过存储范围。对于这些情况我们就不能够使用直接存储每个状态的值函数而是必须使用一种更精简的参数型函数表示的方法。<br>强化学习的框架迫使我们进行近似求解。而且这个框架同时也很容易进行近似，比如对于很多小概率出现的状态，选择最优解和次优解区别不大。而且强化学习的在线学习的特性让其能够方便地对出现比较多的状态进行更多关注。这是一个强化学习区分其它近似求解MDP的关键特点。</p>
+        <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>在配置Tensorflow环境时，通常会需要安装CUDA驱动和cuDNN，当时对这个两个工具的用处并不是很了解，只是知道使用这个工具可以将程序并行执行来加速机器学习。正巧，本学期选了高性能计算实验这门课程，想借着这次机会来学习下CUDA的编程顺便完成本课程的大作业，于是有了今天的这篇文章。<br><a id="more"></a></p>
+<h3 id="CUDA简介"><a href="#CUDA简介" class="headerlink" title="CUDA简介"></a>CUDA简介</h3><p>CUDA是NVIDIA公司推出的针对NVIDIA显卡的并行计算编程模型，如今使用GPU来加速模型训练已经成为机器学习领域的标配。CUDA支持使用 C/C++ Python 和Fortran语言进行编程<br>，目前最新的CUDA版本为CUDA11。</p>
+<h3 id="CUDA编程基础"><a href="#CUDA编程基础" class="headerlink" title="CUDA编程基础"></a>CUDA编程基础</h3><p>说到CUDA编程我们不得不了解一下GPU的硬件特点。CPU和GPU最大的不同在于GPU通常拥有几千个核心而CPU目前核数最多的才仅有64核。这样GPU就可以利用其自身优势同时启动几千个进程来并行计算，对与大规模的矩阵运算使用GPU可以取得远超CPU的性能表现。CPU的优势是可以进行复杂的逻辑运算，因此CPU更适合与控制密集型的任务，而GPU更适合于计算密集型的任务。<a target="_blank" rel="noopener" href="https://imgchr.com/i/D0TlJs"><img data-src="https://s3.ax1x.com/2020/11/26/D0TlJs.jpg" alt="D0TlJs.jpg"></a><br>对于一个任务而言可以将计算密集型的子任务划分给GPU进行执行，控制密集型的子任务划分给CPU进行执行，使用异构计算来提升程序整体的执行效率。<br>在CUDA中CPU和CPU的内存我们称为<strong>HOST</strong>，GPU和GPU的内存我们称为<strong>device</strong>。CUDA程序的一般流程为：<br>（1）将数据从CPU内存复制到GPU内存。<br>（2）在执行芯片上缓存数据，加载GPU称许并执行。<br>（3）将计算结果从GPU内存复制到CPU内存。</p>
+<h3 id="GPU的硬件层次"><a href="#GPU的硬件层次" class="headerlink" title="GPU的硬件层次"></a>GPU的硬件层次</h3><p><a target="_blank" rel="noopener" href="https://imgchr.com/i/DBA2FJ"><img data-src="https://s3.ax1x.com/2020/11/26/DBA2FJ.png" alt="DBA2FJ.png"></a><br>上图是一块显卡的示意图，我们可以看到上图中占图片面积最大部分的绿色为GPU的核心，中间青色的为GPU的内存。整个GPU由六个GPC（Graphics Processing Cluster，图形处理集群）组成（当然还有其它部分，比如内存，接口等，不一一列出），每个GPC又由7个TPC（Thread Processing Cluster，线程处理器集群）组成，每个TPC由两个SM（streaming multiprocessor，流多处理器）组成，每个SM由多个SP（streaming multiprocessor，流处理器）组成（以及还有寄存器资源，shared memory资源，L1cache，scheduler，SPU，LD/ST单元等等），在CUDA中每32个核心（SP/Thread）组成一个warp，每个warp共享同一个memory和instruction unit。<br>Stream：流（Stream）是一系列顺序执行的命令，流之间相对无序或并发的执行他们的命令。</p>
+<h3 id="GPU的软件层次"><a href="#GPU的软件层次" class="headerlink" title="GPU的软件层次"></a>GPU的软件层次</h3><p><a target="_blank" rel="noopener" href="https://imgchr.com/i/DB0j9H"><img data-src="https://s3.ax1x.com/2020/11/26/DB0j9H.png" alt="DB0j9H.png"></a><br>在软件层面上，使用cuda进行编程时一个程序就是一个Kernel，一个Kernel对应一个Grid，一个Grid对应一组Block，一组Block共享全局内存，一个BLock对应一组Thread，同一个Block中的Thread可以进行线程间的通信，快速交换数据，Thread是进行编程操作的最小单位，每32个Thread醉成一个Warp，Warp是GPU执行命令的最小单位。因此Thread最好分配为32的整数倍。Grid和BLock可以根据需要设定为1-dim，2-dim，或者3-dim，而Thread只能设定为1-dim或者2-dim。<br><a target="_blank" rel="noopener" href="https://imgchr.com/i/DBBV3j"><img data-src="https://s3.ax1x.com/2020/11/26/DBBV3j.png" alt="DBBV3j.png"></a><br>硬件层次和软件层次的对应关系如下图所示<br><a target="_blank" rel="noopener" href="https://imgchr.com/i/DDJdoj"><img data-src="https://s3.ax1x.com/2020/11/27/DDJdoj.png" alt="DDJdoj.png"></a></p>
+<h3 id="GPU并行程序示例"><a href="#GPU并行程序示例" class="headerlink" title="GPU并行程序示例"></a>GPU并行程序示例</h3><p>下面展示了一个调整图片亮度的程序，分别使用CPU和GPU运行并对比运行时间：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line">import cv2</span><br><span class="line">import numpy as np</span><br><span class="line">from numba import cuda</span><br><span class="line">import time</span><br><span class="line">import math</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">@cuda.jit</span><br><span class="line">def process_gpu(img,channels):</span><br><span class="line">    tx &#x3D; cuda.blockIdx.x * cuda.blockDim.x + cuda.threadIdx.x</span><br><span class="line">    ty &#x3D; cuda.blockIdx.y * cuda.blockDim.y + cuda.threadIdx.y</span><br><span class="line">    for c in range(channels):</span><br><span class="line">        color &#x3D; img[tx, ty][c] * 2.0 + 30</span><br><span class="line">        if color &gt; 255:</span><br><span class="line">            img[tx, ty][c] &#x3D; 255</span><br><span class="line">        elif color &lt; 0:</span><br><span class="line">            img[tx, ty][c] &#x3D; 0</span><br><span class="line">        else:</span><br><span class="line">            img[tx, ty][c] &#x3D; color</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def process_cpu(img,dst):</span><br><span class="line">    rows,cols,channels&#x3D;img.shape</span><br><span class="line">    for i in range(rows):</span><br><span class="line">        print(i)</span><br><span class="line">        for j  in range(cols):</span><br><span class="line">            for c in range(channels):</span><br><span class="line">                color &#x3D; img[i,j][c] * 2.0 + 30</span><br><span class="line">                if color&gt;255:</span><br><span class="line">                    dst[i,j][c] &#x3D; 255</span><br><span class="line">                elif color &lt; 0:</span><br><span class="line">                    dst[i,j][c] &#x3D; 0</span><br><span class="line">                else:</span><br><span class="line">                    dst[i,j][c] &#x3D; color</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">if __name__ &#x3D;&#x3D; &quot;__main__&quot;:</span><br><span class="line">    img &#x3D; cv2.imread(&#39;test.jpg&#39;)</span><br><span class="line">    rows, cols, channels &#x3D; img.shape</span><br><span class="line">    dst_cpu &#x3D;img.copy()</span><br><span class="line">    dst_gpu &#x3D; img.copy()</span><br><span class="line">    start_cpu &#x3D;time.time()</span><br><span class="line">    process_cpu(img,dst_cpu)</span><br><span class="line">    end_cpu &#x3D; time.time()</span><br><span class="line">    time_cpu &#x3D; end_cpu - start_cpu</span><br><span class="line">    print(&quot;cpu_process time:&quot;+str(time_cpu))</span><br><span class="line"></span><br><span class="line">    dImg &#x3D; cuda.to_device(img)</span><br><span class="line">    threadsperblock &#x3D; (16,16)</span><br><span class="line">    blockspergrid_x &#x3D; int(math.ceil(rows&#x2F;threadsperblock[0]))</span><br><span class="line">    blockspergrid_y &#x3D; int(math.ceil(cols&#x2F;threadsperblock[1]))</span><br><span class="line">    blockspergrid &#x3D; (blockspergrid_x,blockspergrid_y)</span><br><span class="line">    cuda.synchronize()</span><br><span class="line">    start_gpu &#x3D; time.time()</span><br><span class="line">    process_gpu[blockspergrid, threadsperblock](dImg, channels)</span><br><span class="line">    cuda.synchronize()</span><br><span class="line">    end_gpu &#x3D; time.time()</span><br><span class="line">    dst_gpu &#x3D; dImg.copy_to_host()</span><br><span class="line">    time_gpu &#x3D; end_gpu - start_gpu</span><br><span class="line">    print(&quot;Gpu_time:&quot; + str(time_gpu))</span><br><span class="line">    cv2.imwrite(&quot;result_cpu.jpg&quot;, dst_cpu)</span><br><span class="line">    cv2.imwrite(&quot;result_gpu.jpg&quot;, dst_gpu)</span><br><span class="line">    print(&quot;Done&quot;)</span><br></pre></td></tr></table></figure><br>程序运行结果<br><a target="_blank" rel="noopener" href="https://imgchr.com/i/DDtVbD"><img data-src="https://s3.ax1x.com/2020/11/27/DDtVbD.png" alt="DDtVbD.png"></a><br>可见使用GPU有明显的加速作用。</p>
 
     </div>
 
@@ -422,7 +407,7 @@ v_{*}(s) &=\max _{a \in \mathcal{A}(s)} q_{\pi_{*}}(s, a) \\
   </li>
   <li class="post-copyright-link">
       <strong>本文链接：</strong>
-      <a href="http://example.com/2020/11/13/%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0Sutton-Chapter3-%E6%9C%89%E9%99%90%E9%A9%AC%E5%B0%94%E5%8F%AF%E5%A4%AB%E5%86%B3%E7%AD%96%E8%BF%87%E7%A8%8B/" title="强化学习Sutton-Chapter3-有限马尔可夫决策过程">http://example.com/2020/11/13/强化学习Sutton-Chapter3-有限马尔可夫决策过程/</a>
+      <a href="http://example.com/2020/11/27/CUDA%E5%B9%B6%E8%A1%8C%E7%BC%96%E7%A8%8B%E5%88%9D%E6%8E%A2/" title="CUDA并行编程初探">http://example.com/2020/11/27/CUDA并行编程初探/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
@@ -431,22 +416,19 @@ v_{*}(s) &=\max _{a \in \mathcal{A}(s)} q_{\pi_{*}}(s, a) \\
 </div>
 
           <div class="post-tags">
-              <a href="/tags/Reinforcement-Learning/" rel="tag"><i class="fa fa-tag"></i> Reinforcement Learning</a>
               <a href="/tags/Machine-Learning/" rel="tag"><i class="fa fa-tag"></i> Machine Learning</a>
+              <a href="/tags/CUDA/" rel="tag"><i class="fa fa-tag"></i> CUDA</a>
           </div>
 
         
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2020/11/02/hello-world/" rel="prev" title="Hello World">
-                  <i class="fa fa-chevron-left"></i> Hello World
+                <a href="/2020/11/20/%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0Sutton-Chapter4-%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/" rel="prev" title="强化学习Sutton-Chapter4-动态规划">
+                  <i class="fa fa-chevron-left"></i> 强化学习Sutton-Chapter4-动态规划
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2020/11/20/%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0Sutton-Chapter4-%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/" rel="next" title="强化学习Sutton-Chapter4-动态规划">
-                  强化学习Sutton-Chapter4-动态规划 <i class="fa fa-chevron-right"></i>
-                </a>
             </div>
           </div>
     </footer>
@@ -686,7 +668,7 @@ NexT.utils.loadComments('#valine-comments', () => {
   NexT.utils.getScript('//cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js', () => {
     new Valine(Object.assign({"enable":true,"appId":"3AITwxJDYfHx7XXFKTDQSt3G-MdYXbMMI","appKey":"CwG4iRS2Y7xKe3tjSRUXIc8F","serverURLs":null,"placeholder":"输入你的评论\n昵称为必填项目，输入QQ号可以直接获取用户名和头像，并且省去了填写邮箱的麻烦！\n虽然email不是必选，但是填写了email可以收到推送通知哦！","avatar":null,"meta":["nick","mail","link"],"pageSize":10,"lang":null,"visitor":true,"comment_count":true,"recordIP":true,"enableQQ":true,"requiredFields":["nick"]}, {
       el: '#valine-comments',
-      path: "/2020/11/13/%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0Sutton-Chapter3-%E6%9C%89%E9%99%90%E9%A9%AC%E5%B0%94%E5%8F%AF%E5%A4%AB%E5%86%B3%E7%AD%96%E8%BF%87%E7%A8%8B/",
+      path: "/2020/11/27/CUDA%E5%B9%B6%E8%A1%8C%E7%BC%96%E7%A8%8B%E5%88%9D%E6%8E%A2/",
       serverURLs: "https://3aitwxjd.api.lncldglobal.com"
     }));
   }, window.Valine);
